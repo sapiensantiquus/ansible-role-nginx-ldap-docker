@@ -1,0 +1,28 @@
+FROM nginx
+
+# RUN rm -rf /tmp/* && apt-get update && \
+#    apt-get -y install git python python-dev python-pip libsasl2-dev libldap2-dev libssl-dev&& \
+#    git clone https://github.com/nginxinc/nginx-ldap-auth.git && \
+#    pip install python-ldap && \
+#    cd nginx-ldap-auth && \
+#    bash nginx-ldap-auth-daemon-ctl.sh start && \
+#    python /tmp/nginx-ldap-auth/backend-sample-app.py
+
+ENV AWS_SESSION_TOKEN {{ aws_session_token }}
+ENV AWS_SECRET_ACCESS_KEY {{ aws_secret_access_key }}
+ENV AWS_ACCESS_KEY_ID {{ aws_access_key_id }}
+RUN apt-get update
+RUN apt-get -y install {% for req in nginx_host_requirements %}{{ req }} {% endfor %}
+
+RUN aws s3 cp s3://{{ s3_bucket }}/{{ s3_object }} {{ nginx_app_archive }}
+RUN tar xvf {{ nginx_app_archive }}
+RUN pip install -r requirements.pip
+RUN mv {{ nginx_ldap_backend_app }} /usr/local/sbin/nginx-auth-backend
+RUN chmod u+x /usr/local/sbin/nginx-auth-backend
+RUN mv {{ nginx_ldap_daemon }} /usr/local/sbin/nginx-ldap-daemon
+RUN chmod u+x /usr/local/sbin/nginx-ldap-daemon
+ADD nginx.conf /etc/nginx/nginx.conf
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE 8081
+CMD ["/usr/bin/supervisord"]
