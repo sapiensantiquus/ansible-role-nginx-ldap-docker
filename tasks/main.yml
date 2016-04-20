@@ -1,0 +1,27 @@
+---
+- name: Unarchive application
+  unarchive:
+    src: "{{ playbook_dir }}/{{ nginx_build_dir }}/{{ item }}"
+    dest: "{{ playbook_dir }}/{{ nginx_build_dir }}"
+  with_items: "{{ nginx_app_archives }}"
+
+- name: Template the docker file
+  template: 
+    src: Dockerfile.j2
+    dest: "{{ playbook_dir }}/{{ nginx_build_dir }}/Dockerfile"
+
+- name: Template the nginx conf
+  template: 
+    src: nginx.conf.j2
+    dest: "{{ playbook_dir }}/{{ nginx_build_dir }}/nginx.conf"
+
+- name: Template the supervisor conf
+  template:
+    src: supervisord.conf.j2
+    dest: "{{ playbook_dir }}/{{ nginx_build_dir }}/supervisord.conf"
+
+#- name: Build Docker image
+#  shell: "docker build -t nginx_ldap_app ."
+#  args:
+#    chdir: "build"
+ 
