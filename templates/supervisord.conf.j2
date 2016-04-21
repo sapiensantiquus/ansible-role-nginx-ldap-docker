@@ -3,12 +3,12 @@ nodaemon=true
 
 [program:nginx-ldap-daemon]
 command={{ nginx_ldap_daemon_command }}
-#/usr/local/sbin/nginx-ldap-daemon
 
 [program:nginx-ldap-app]
 command={{ nginx_ldap_app_command }}
-#/usr/local/sbin/nginx-auth-backend
+
+[program:redis]
+command={{ nginx_ldap_redis_command }}
 
 [program:nginx]
-command={{ nginx_command }}
-#/usr/sbin/nginx -g "daemon off;"
+command={{ nginx_ldap_command }}

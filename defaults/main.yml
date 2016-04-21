@@ -1,2 +1,3 @@
-nginx_build_dir: build
-nginx_listen_port: 8081
+nginx_ldap_build_dir: build
+nginx_ldap_template_dir:
+nginx_ldap_listen_port: 8081

@@ -1,0 +1,3 @@
+- src: git+ssh://git@github.com/mGageTechOps/ansible-role-cfn-ecr-repository.git
+  name: ecr_repo
+#  version: 0.0.2
