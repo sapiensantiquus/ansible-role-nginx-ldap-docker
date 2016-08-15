@@ -1,3 +1,4 @@
 roles
 build
 test-playbook.yml
+*.retry

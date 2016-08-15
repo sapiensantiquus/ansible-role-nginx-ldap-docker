@@ -1,27 +1,57 @@
 ---
+- name: Copy application to local build space (security token)
+  s3:
+    bucket: "{{ nginx_ldap_s3_bucket }}"
+    object: "{{ nginx_ldap_s3_object }}"
+    dest: "{{ playbook_dir }}/{{ nginx_ldap_build_dir}}/{{ nginx_ldap_app_archive }}"
+    mode: get
+    security_token: "{{ nginx_ldap_security_token}}"
+    region: "{{ nginx_ldap_aws_region }}"
+  when: nginx_ldap_security_token is defined
+
+- name: Copy application to local build space (no security token)
+  s3:
+    bucket: "{{ nginx_ldap_s3_bucket }}"
+    object: "{{ nginx_ldap_s3_object }}"
+    dest: "{{ playbook_dir }}/{{ nginx_ldap_build_dir}}/{{ nginx_ldap_app_archive }}"
+    mode: get
+    region: "{{ nginx_ldap_aws_region }}"
+  when: nginx_ldap_security_token is not defined
+
+
 - name: Unarchive application
   unarchive:
-    src: "{{ playbook_dir }}/{{ nginx_build_dir }}/{{ item }}"
-    dest: "{{ playbook_dir }}/{{ nginx_build_dir }}"
-  with_items: "{{ nginx_app_archives }}"
+    src: "{{ playbook_dir }}/{{ nginx_ldap_build_dir }}/{{ item }}"
+    dest: "{{ playbook_dir }}/{{ nginx_ldap_build_dir }}"
+  with_items: "{{ nginx_ldap_app_archives }}"
 
 - name: Template the docker file
-  template: 
+  template:
     src: Dockerfile.j2
-    dest: "{{ playbook_dir }}/{{ nginx_build_dir }}/Dockerfile"
+    dest: "{{ playbook_dir }}/{{ nginx_ldap_build_dir }}/Dockerfile"
 
 - name: Template the nginx conf
-  template: 
+  template:
     src: nginx.conf.j2
-    dest: "{{ playbook_dir }}/{{ nginx_build_dir }}/nginx.conf"
+    dest: "{{ playbook_dir }}/{{ nginx_ldap_build_dir }}/nginx.conf"
 
 - name: Template the supervisor conf
   template:
     src: supervisord.conf.j2
-    dest: "{{ playbook_dir }}/{{ nginx_build_dir }}/supervisord.conf"
+    dest: "{{ playbook_dir }}/{{ nginx_ldap_build_dir }}/supervisord.conf"
 
-#- name: Build Docker image
-#  shell: "docker build -t nginx_ldap_app ."
-#  args:
-#    chdir: "build"
- 
+- name: Build Docker image
+  shell: "docker build --rm -t {{ nginx_ldap_docker_local_image }} ."
+  args:
+    chdir: "build"
+
+- name: Tag Docker image with N tags
+  shell: "docker tag {{ nginx_ldap_docker_local_image }} {{ item }}"
+  with_items: "{{ nginx_ldap_docker_tags }}"
+
+- name: ECR Login
+  shell: "$(aws ecr get-login)"
+
+- name: Deploy to ECR
+  shell: "docker push {{ item }}"
+  with_items: "{{ nginx_ldap_docker_tags }}"
