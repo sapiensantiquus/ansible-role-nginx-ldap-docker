@@ -30,7 +30,7 @@ ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ADD cwl.conf /etc/cwl.conf
 RUN curl https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
 RUN chmod +x ./awslogs-agent-setup.py
-RUN ./awslogs-agent-setup.py -n -r us-west-2 -c /etc/cwl.conf
+
 
 
 EXPOSE 8081
