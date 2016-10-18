@@ -43,7 +43,7 @@ http {
         location = /auth-proxy {
             internal;
 
-            proxy_pass "http://{{ nginx_ldap_daemon_host }}:{{ nginx_ldap_daemon_port }}";
+            proxy_pass "http://{{ nginx_ldap_app_host }}:{{ nginx_ldap_app_port }}";
 
             proxy_pass_request_body off;
             proxy_set_header Content-Length "";
