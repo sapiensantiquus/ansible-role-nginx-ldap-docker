@@ -1,11 +1,8 @@
 [supervisord]
 nodaemon=true
 
-[program:nginx-ldap-daemon]
-command={{ nginx_ldap_daemon_command }}
-
-[program:nginx-ldap-app]
-command={{ nginx_ldap_app_command }}
+[program:nginx-ldap-auth]
+command={{ nginx_ldap_auth_command }}
 
 [program:nginx]
 command={{ nginx_ldap_command }}
