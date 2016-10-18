@@ -22,8 +22,7 @@ RUN rm -rf /tmp/* && \
     apt-get update && \
     apt-get -y install {% for req in nginx_ldap_host_requirements %}{{ req }} {% endfor %} && \
     pip install -r requirements.pip && \
-    chmod u+x /usr/local/sbin/nginx-auth-backend && \
-    chmod u+x /usr/local/sbin/nginx-ldap-daemon
+    chmod u+x /usr/local/sbin/nginx-auth-app
 
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
