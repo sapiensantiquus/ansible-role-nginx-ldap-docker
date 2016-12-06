@@ -74,7 +74,7 @@ http {
             # it, respectively. They are required for cookie-based
             # authentication. Comment them out if using HTTP basic
             # authentication.
-            proxy_set_header X-CookieName "nginxauth";
+            proxy_set_header X-CookieName "{{ nginx_ldap_cookie_name }}";
             proxy_set_header Cookie nginxauth=$cookie_nginxauth;
 
             # (Required if using Microsoft Active Directory as the LDAP server)
